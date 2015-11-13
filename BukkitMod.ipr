@@ -60,9 +60,24 @@
       <profile default="true" name="Default" enabled="false">
         <processorPath useClasspath="true" />
       </profile>
+      <profile default="false" name="Annotation profile for BukkitTest" enabled="true">
+        <sourceOutputDir name="target\generated-sources\annotations" />
+        <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="BukkitTest" />
+      </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="BukkitTest" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
   <component name="CopyrightManager" default="" />
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/eclipse/plugins/BukkitTest-1.0-SNAPSHOT.jar" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/eclipse/plugins/BukkitTest-1.0-SNAPSHOT.jar" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../BukkitTest" charset="UTF-8" />
+  </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
@@ -78,6 +93,13 @@
           </set>
         </option>
       </GradleProjectSettings>
+    </option>
+  </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/../BukkitTest/pom.xml" />
+      </list>
     </option>
   </component>
   <component name="Palette2">
@@ -213,10 +235,12 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BukkitMod.iml" filepath="$PROJECT_DIR$/BukkitMod.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../BukkitTest/BukkitTest.iml" filepath="$PROJECT_DIR$/../BukkitTest/BukkitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/PlugMod.iml" filepath="$PROJECT_DIR$/PlugMod.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.7" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="VcsDirectoryMappings">
@@ -757,6 +781,17 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES />
+    </library>
+    <library name="Maven: org.spigotmc:spigot-api:1.7.10-R0.1-SNAPSHOT">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/spigotmc/spigot-api/1.7.10-R0.1-SNAPSHOT/spigot-api-1.7.10-R0.1-20140904.092507-105.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/spigotmc/spigot-api/1.7.10-R0.1-SNAPSHOT/spigot-api-1.7.10-R0.1-20140904.092507-105-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/spigotmc/spigot-api/1.7.10-R0.1-SNAPSHOT/spigot-api-1.7.10-R0.1-20140904.092507-105-sources.jar!/" />
+      </SOURCES>
     </library>
   </component>
 </project>

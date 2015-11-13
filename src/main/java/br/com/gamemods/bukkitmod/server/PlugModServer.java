@@ -1,13 +1,14 @@
 package br.com.gamemods.bukkitmod.server;
 
+import br.com.gamemods.bukkitmod.command.PlugModConsoleCommandSender;
 import br.com.gamemods.bukkitmod.mod.PlugMod;
+import br.com.gamemods.bukkitmod.scheduler.PlugModScheduler;
 import com.avaje.ebean.config.ServerConfig;
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.MinecraftForge;
 import org.bukkit.*;
-import org.bukkit.command.CommandException;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.PluginCommand;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.help.HelpMap;
@@ -16,6 +17,8 @@ import org.bukkit.map.MapView;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicesManager;
+import org.bukkit.plugin.SimplePluginManager;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -24,6 +27,7 @@ import org.bukkit.util.CachedServerIcon;
 import javax.annotation.Nonnull;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -33,11 +37,88 @@ public class PlugModServer implements Server
     private final PlugMod mod;
     @Nonnull
     private final MinecraftServer server;
+    private final SimpleCommandMap commandMap;
+    @Nonnull
+    private final SimplePluginManager pluginManager;
+    private final PlugModScheduler scheduler;
+    @Nonnull
+    private PlugModConsoleCommandSender consoleCommandSender;
+    @Nonnull
+    private File pluginDir;
+    private long started;
 
     public PlugModServer(@Nonnull PlugMod mod, @Nonnull MinecraftServer server)
     {
         this.mod = mod;
         this.server = server;
+        this.commandMap = new SimpleCommandMap(this);
+        this.pluginManager = new SimplePluginManager(this, this.commandMap);
+        this.pluginManager.registerInterface(JavaPluginLoader.class);
+        this.pluginDir = server.getFile("plugins");
+        this.scheduler = new PlugModScheduler();
+    }
+
+    public void start() throws IllegalStateException
+    {
+        if(started != 0)
+            throw new IllegalStateException("Already started");
+
+        started = System.currentTimeMillis();
+
+        getLogger().info("Bukkit implementation is starting...");
+        this.consoleCommandSender = new PlugModConsoleCommandSender(this);
+        FMLCommonHandler.instance().bus().register(scheduler);
+        loadPlugins();
+    }
+
+    private void loadPlugins()
+    {
+        pluginDir = server.getFile("plugins");
+        if(!pluginDir.isDirectory())
+            if(!pluginDir.mkdirs() || !pluginDir.isDirectory())
+                throw new RuntimeException(new IOException("Failed to create the directory "+ pluginDir.getAbsolutePath()));
+
+        getLogger().info("Loading plugins at "+pluginDir.getAbsolutePath());
+        Plugin[] plugins = pluginManager.loadPlugins(pluginDir);
+        getLogger().info("Loaded "+plugins.length+" plugins");
+        for(Plugin plugin: plugins)
+        {
+            getLogger().info("Enabling plugin "+plugin.getName()+"-"+plugin.getDescription().getVersion());
+            pluginManager.enablePlugin(plugin);
+        }
+    }
+
+    @Override
+    public void shutdown()
+    {
+        getLogger().info("Bukkit implementation is shutting down...");
+
+        getLogger().info("Clearing plugins...");
+        pluginManager.clearPlugins();
+        getLogger().info("Removing commands...");
+        commandMap.clearCommands();
+        FMLCommonHandler.instance().bus().unregister(scheduler);
+
+        getLogger().info("Stopping the server...");
+        server.initiateShutdown();
+    }
+
+    public void setPluginDir(File pluginDir) throws IllegalStateException
+    {
+        if(started != 0)
+            throw new IllegalStateException("Already started");
+
+        this.pluginDir = pluginDir;
+    }
+
+    public File getPluginDir()
+    {
+        return pluginDir;
+    }
+
+    public MinecraftServer getVanillaServer()
+    {
+        return server;
     }
 
     @Override
@@ -61,37 +142,37 @@ public class PlugModServer implements Server
     @Override
     public Player[] _INVALID_getOnlinePlayers()
     {
-        return new Player[0];
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Collection<? extends Player> getOnlinePlayers()
     {
-        throw new UnsupportedOperationException();
+        return Arrays.asList(_INVALID_getOnlinePlayers());
     }
 
     @Override
     public int getMaxPlayers()
     {
-        throw new UnsupportedOperationException();
+        return server.getMaxPlayers();
     }
 
     @Override
     public int getPort()
     {
-        throw new UnsupportedOperationException();
+        return server.getPort();
     }
 
     @Override
     public int getViewDistance()
     {
-        throw new UnsupportedOperationException();
+        return server.getConfigurationManager().getViewDistance();
     }
 
     @Override
     public String getIp()
     {
-        throw new UnsupportedOperationException();
+        return server.getHostname();
     }
 
     @Override
@@ -115,7 +196,7 @@ public class PlugModServer implements Server
     @Override
     public boolean getGenerateStructures()
     {
-        throw new UnsupportedOperationException();
+        return server.canStructuresSpawn();
     }
 
     @Override
@@ -127,19 +208,19 @@ public class PlugModServer implements Server
     @Override
     public boolean getAllowNether()
     {
-        throw new UnsupportedOperationException();
+        return server.getAllowNether();
     }
 
     @Override
     public boolean hasWhitelist()
     {
-        throw new UnsupportedOperationException();
+        return server.getConfigurationManager().isWhiteListEnabled();
     }
 
     @Override
     public void setWhitelist(boolean b)
     {
-        throw new UnsupportedOperationException();
+        server.getConfigurationManager().setWhiteListEnabled(b);
     }
 
     @Override
@@ -163,13 +244,13 @@ public class PlugModServer implements Server
     @Override
     public String getUpdateFolder()
     {
-        throw new UnsupportedOperationException();
+        return "update";
     }
 
     @Override
     public File getUpdateFolderFile()
     {
-        throw new UnsupportedOperationException();
+        return new File("update");
     }
 
     @Override
@@ -217,13 +298,13 @@ public class PlugModServer implements Server
     @Override
     public PluginManager getPluginManager()
     {
-        throw new UnsupportedOperationException();
+        return pluginManager;
     }
 
     @Override
     public BukkitScheduler getScheduler()
     {
-        throw new UnsupportedOperationException();
+        return scheduler;
     }
 
     @Override
@@ -289,13 +370,16 @@ public class PlugModServer implements Server
     @Override
     public Logger getLogger()
     {
-        throw new UnsupportedOperationException();
+        return Logger.getLogger("Minecraft");
     }
 
     @Override
-    public PluginCommand getPluginCommand(String s)
+    public PluginCommand getPluginCommand(String command)
     {
-        throw new UnsupportedOperationException();
+        Command cmd = commandMap.getCommand(command);
+        if(!(cmd instanceof PluginCommand))
+            return null;
+        return (PluginCommand) cmd;
     }
 
     @Override
@@ -355,7 +439,7 @@ public class PlugModServer implements Server
     @Override
     public int getSpawnRadius()
     {
-        throw new UnsupportedOperationException();
+        return server.getSpawnProtectionSize();
     }
 
     @Override
@@ -367,29 +451,23 @@ public class PlugModServer implements Server
     @Override
     public boolean getOnlineMode()
     {
-        throw new UnsupportedOperationException();
+        return server.isServerInOnlineMode();
     }
 
     @Override
     public boolean getAllowFlight()
     {
-        throw new UnsupportedOperationException();
+        return server.isFlightAllowed();
     }
 
     @Override
     public boolean isHardcore()
     {
-        throw new UnsupportedOperationException();
+        return server.isHardcore();
     }
 
     @Override
     public boolean useExactLoginLocation()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void shutdown()
     {
         throw new UnsupportedOperationException();
     }
@@ -463,7 +541,7 @@ public class PlugModServer implements Server
     @Override
     public ConsoleCommandSender getConsoleSender()
     {
-        throw new UnsupportedOperationException();
+        return consoleCommandSender;
     }
 
     @Override

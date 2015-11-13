@@ -17,6 +17,9 @@ buildscript {
 
 apply plugin: 'forge'
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 version = "0.1-SNAPSHOT"
 group= "br.com.gamemods"
 archivesBaseName = "PlugMod"
@@ -30,7 +33,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        name = "md-5-repo"
+        name = "md5-repo"
         url = "http://repo.md-5.net/content/groups/public/"
     }
 }

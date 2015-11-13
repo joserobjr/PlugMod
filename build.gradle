@@ -30,8 +30,8 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        name = "bukkit-repo"
-        url = "http://repo.bukkit.org/content/groups/public/"
+        name = "md-5-repo"
+        url = "http://repo.md-5.net/content/groups/public/"
     }
 }
 
@@ -49,7 +49,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    compile 'org.bukkit:bukkit:1.7.9-R0.2'
+    compile 'org.spigotmc:spigot-api:1.7.10-R0.1-SNAPSHOT'
 }
 
 processResources

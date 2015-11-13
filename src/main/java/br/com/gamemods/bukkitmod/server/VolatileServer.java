@@ -25,18 +25,18 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * Delegates a {@link org.bukkit.Server}
+ * Delegates a {@link PlugModServer}
  */
 public class VolatileServer implements Server
 {
-    private BukkitServer currentServer;
+    private PlugModServer currentServer;
 
-    public BukkitServer getCurrentServer()
+    public PlugModServer getCurrentServer()
     {
         return currentServer;
     }
 
-    public void setCurrentServer(BukkitServer server)
+    public void setCurrentServer(PlugModServer server)
     {
         this.currentServer = server;
         server.getLogger().info("This server is running " + getName() + " version " + getVersion() + " (Implementing API version " + getBukkitVersion() + ")");

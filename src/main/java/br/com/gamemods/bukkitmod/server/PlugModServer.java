@@ -1,6 +1,6 @@
 package br.com.gamemods.bukkitmod.server;
 
-import br.com.gamemods.bukkitmod.mod.BukkitMod;
+import br.com.gamemods.bukkitmod.mod.PlugMod;
 import com.avaje.ebean.config.ServerConfig;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.*;
@@ -27,14 +27,14 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class BukkitServer implements Server
+public class PlugModServer implements Server
 {
     @Nonnull
-    private final BukkitMod mod;
+    private final PlugMod mod;
     @Nonnull
     private final MinecraftServer server;
 
-    public BukkitServer(@Nonnull BukkitMod mod, @Nonnull MinecraftServer server)
+    public PlugModServer(@Nonnull PlugMod mod, @Nonnull MinecraftServer server)
     {
         this.mod = mod;
         this.server = server;
@@ -43,7 +43,7 @@ public class BukkitServer implements Server
     @Override
     public String getName()
     {
-        return "BukkitMod";
+        return "PlugMod";
     }
 
     @Override

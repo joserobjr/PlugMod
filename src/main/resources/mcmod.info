@@ -1,7 +1,7 @@
 [
 {
-  "modid": "BukkitMod",
-  "name": "BukkitMod",
+  "modid": "PlugMod",
+  "name": "PlugMod",
   "description": "Bukkit implementation for Forge.",
   "version": "${version}",
   "mcversion": "${mcversion}",

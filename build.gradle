@@ -19,7 +19,7 @@ apply plugin: 'forge'
 
 version = "0.1-SNAPSHOT"
 group= "br.com.gamemods"
-archivesBaseName = "BukkitMod"
+archivesBaseName = "PlugMod"
 
 minecraft {
     version = "1.7.10-10.13.4.1558-1.7.10"
